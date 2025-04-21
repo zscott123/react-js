@@ -1,13 +1,22 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ import this
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginForm = () => {
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
 
-  const navigate = useNavigate(); // ✅ initialize the navigator
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      navigate('/home');
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,14 +26,25 @@ const LoginForm = () => {
     });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Logging in with:", loginData);
-    // Add API call or authentication logic here
+    try {
+      const response = await axios.post('http://localhost:8000/api/auth/login', loginData);
+      const { access_token } = response.data;
+
+      localStorage.setItem('access_token', access_token);
+
+      setError("");
+
+      navigate("/home");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+      console.error("Login error:", err);
+    }
   };
 
   const handleRegisterRedirect = () => {
-    navigate("/register"); // ✅ perform the navigation
+    navigate("/register");
   };
 
   return (

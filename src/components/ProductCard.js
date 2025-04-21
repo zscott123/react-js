@@ -2,23 +2,25 @@ import React from "react";
 import { useCart } from "../context/CartContext";
 
 export default function ProductCard({ product }) {
-  const { title, image, price, category } = product;
+  const { name, description, img, stock, price } = product;
   const { addToCart } = useCart();
+
   return (
     <div className="col">
       <div className="product-item">
         <figure>
-          <a href="/" title="Product Title">
+          <a href="/" title={name}>
             <img
               style={{ width: "150px", height: "200px" }}
-              src={image}
-              alt="Product Thumbnail"
+              src={img}
+              alt={name}
               className="tab-image"
             />
           </a>
         </figure>
         <div className="d-flex flex-column text-center">
-          <h3 className="fs-6 fw-normal">{title}</h3>
+          <h3 className="fs-6 fw-normal">{name}</h3>
+          <p className="text-muted fs-7 mb-1">{description}</p>
           <div>
             <span className="rating">
               <svg width="18" height="18" className="text-warning">
@@ -40,10 +42,9 @@ export default function ProductCard({ product }) {
             <span>(222)</span>
           </div>
           <div className="d-flex justify-content-center align-items-center gap-2">
-            <del>${product.price}</del>
-            <span className="text-dark fw-semibold">{price}</span>
+            <span className="text-dark fw-semibold">${price}</span>
             <span className="badge border border-dark-subtle rounded-0 fw-normal px-1 fs-7 lh-1 text-body-tertiary">
-              {category}
+              {stock > 0 ? `In stock: ${stock}` : "Out of stock"}
             </span>
           </div>
           <div className="button-area p-3 pt-0">
@@ -53,7 +54,9 @@ export default function ProductCard({ product }) {
                   type="number"
                   name="quantity"
                   className="form-control border-dark-subtle input-number quantity"
-                  value="1"
+                  defaultValue="1"
+                  min="1"
+                  max={stock}
                 />
               </div>
               <div className="col-7">

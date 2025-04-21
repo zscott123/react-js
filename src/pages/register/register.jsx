@@ -1,13 +1,14 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     email: "",
-    role: "user",
     password: "",
     phone: "",
     address: "",
+    role: "user",
     img: null,
   });
 
@@ -19,11 +20,43 @@ const RegisterForm = () => {
     });
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Registering user with:", formData);
-    // Handle registration logic here
-    // You may need to convert the formData into FormData if you plan to upload the image
+    try {
+      const form = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== null && formData[key] !== undefined) {
+          form.append(key, formData[key]);
+        }
+      });
+
+      const response = await axios.post('http://localhost:8000/api/auth/register', form, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data) {
+        alert('Registration successful!');
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          phone: "",
+          address: "",
+          role: "user",
+          img: null,
+        });
+      }
+    } catch (error) {
+      console.error('Registration failed:', error);
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        'Unknown error';
+      alert('Registration failed: ' + errorMessage);
+    }
   };
 
   return (
@@ -31,11 +64,11 @@ const RegisterForm = () => {
       <h2 style={styles.title}>Register</h2>
       <form onSubmit={handleRegister} style={styles.form}>
         <div style={styles.inputGroup}>
-          <label style={styles.label}>Username:</label>
+          <label style={styles.label}>name:</label>
           <input
             type="text"
-            name="username"
-            value={formData.username}
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             required
             style={styles.input}
@@ -79,12 +112,11 @@ const RegisterForm = () => {
 
         <div style={styles.inputGroup}>
           <label style={styles.label}>Address:</label>
-          <input
-            type="text"
+          <textarea
             name="address"
             value={formData.address}
             onChange={handleChange}
-            style={styles.input}
+            style={{ ...styles.input, minHeight: "60px" }}
           />
         </div>
 
@@ -152,6 +184,7 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     transition: "background-color 0.3s ease",
+    marginTop: "10px",
   },
 };
 
