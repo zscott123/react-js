@@ -6,9 +6,11 @@ import App from "./App";
 import About from "./pages/about-us/About.jsx";
 import Contact from "./pages/contact-us/Contact.jsx";
 import Layout from "./Layout.jsx";
+import RegisterForm from "./pages/register/register.jsx";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import { CartProvider } from "./context/CartContext";
+import LoginForm from "./pages/login/login.jsx";
 
 // PayPal client ID, replace with your actual PayPal Client ID
 const PAYPAL_CLIENT_ID =
@@ -29,8 +31,10 @@ root.render(
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>
-            {/* Default route */}
-            <Route index element={<App />} />
+            {/* Show LoginForm as default */}
+            <Route index element={<LoginForm />} />
+            <Route path="register" element={<RegisterForm />} />
+            <Route path="home" element={<App />} />
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
           </Route>
